@@ -1,4 +1,4 @@
-#LINMA2710 - Scientific Computing
+# LINMA2710 - Scientific Computing
 ## Howework for the 2022-2023 class 
 
 ### Homework topics :
