@@ -158,9 +158,6 @@ int main()
     /*
         SparseMatrix tests note that they rely on a correct matrix,vector product
     */
-
-    /* //COMMENT SPARSEMATRIX PART
-
     Vector e0(4); e0(0) = 1.;
     Vector e1(4); e1(1) = 1.;
     Vector e2(4); e2(2) = 1.;
@@ -267,7 +264,7 @@ int main()
     testisapprox(ans,sm*v, "rectangular sparse matrix * vector");
     
     }
-*/
+
 
     return 0;
 }

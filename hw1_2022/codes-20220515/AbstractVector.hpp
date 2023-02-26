@@ -5,7 +5,6 @@ class AbstractVector
     protected:
         int mSize; // size of vector
     public:
-        AbstractVector(); 
         AbstractVector(int size);
         virtual ~AbstractVector();
         int GetSize() const;

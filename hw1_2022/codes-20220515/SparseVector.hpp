@@ -11,7 +11,6 @@ class SparseVector : public AbstractVector
         int nnz;
         int *rowidx;
         double *nzval;
-        double* nzVector; 
     public:
         SparseVector(int nnz, int const *rowidx, double const *nzval, int size);
         SparseVector();
