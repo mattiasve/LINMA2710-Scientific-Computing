@@ -14,7 +14,7 @@ class SparseVector : public AbstractVector
         double* nzVector; 
     public:
         SparseVector(int nnz, int const *rowidx, double const *nzval, int size);
-        SparseVector();
+        SparseVector(){}; // empty constructor
         ~SparseVector();
         // read-only zero-based indexing
         double Read(int i) const;

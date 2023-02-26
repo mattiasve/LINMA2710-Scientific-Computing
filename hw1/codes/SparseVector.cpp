@@ -2,7 +2,7 @@
 #include "SparseVector.hpp"
 #include <cassert>
 
-SparseVector::SparseVector(){}  // empty default constructor
+//SparseVector::SparseVector(){}  // empty default constructor
 
 SparseVector::SparseVector(int nnz, int const *rowidx, double const *nzval, int size)
 {
@@ -26,10 +26,23 @@ double SparseVector::Read(int i) const
     return nzVector[i]; 
 }
 
-// SparseVector& operator=(const SparseVector& otherVector)
-// {
-    
-// }
+SparseVector& SparseVector::operator=(const SparseVector& otherVector)
+{
+    SparseVector copyObj; 
+    copyObj = otherVector; 
+    return copyObj; 
+}
+
+SparseVector SparseVector::operator+(const SparseVector& v1) const
+{
+    assert(GetSize() == v1.GetSize()); 
+    SparseVector v0(); // comment construire le vecteur ?? 
+    for (int i=0; i<GetSize(); i++)
+    {
+        v0[i] = nzVector[i] + v1.nzVector[i]; 
+    }
+    return v0; 
+}
 
 int main()
 {
