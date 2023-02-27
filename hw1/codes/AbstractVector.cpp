@@ -1,8 +1,6 @@
 #include <cassert>
 #include "AbstractVector.hpp"
 
-AbstractVector::AbstractVector() {}  
-
 AbstractVector::AbstractVector(int size)
 {
     assert(size > 0);

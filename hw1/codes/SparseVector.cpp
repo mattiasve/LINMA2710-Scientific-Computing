@@ -1,47 +1,43 @@
 #include "Vector.hpp"
 #include "SparseVector.hpp"
 #include <cassert>
+#include <iostream>
 
-//SparseVector::SparseVector(){}  // empty default constructor
-
-SparseVector::SparseVector(int nnz, int const *rowidx, double const *nzval, int size)
+SparseVector::SparseVector() : AbstractVector(0) // empty default constructor
 {
-    nzVector = new double[nnz] ;
+    nnz = 0; 
+}
 
-    for (int i=0; i<nnz; i++)
+SparseVector::SparseVector(int nnzero, int const *rowindex, double const *nzvalues, int size) : AbstractVector(size)
+{
+    rowidx = new int[nnzero];
+    nzval = new double[nnzero]; 
+    for(int i=0; i<nnzero; i++)
     {
-        nzVector[rowidx[i]] = nzval[i] ; 
+        *(rowidx+i) = rowindex[i]; 
+        *(nzval+i) = nzvalues[i]; 
     }
 }
 
 SparseVector::~SparseVector()
 {
-    delete [] nzVector ;
+    delete [] rowidx ;
+    delete [] nzval ;
 }
 
 double SparseVector::Read(int i) const
 {
     assert(i > -1);
     assert(i < GetSize());
-    return nzVector[i]; 
+    return *(nzval+i);  
 }
+
 
 SparseVector& SparseVector::operator=(const SparseVector& otherVector)
 {
-    SparseVector copyObj; 
-    copyObj = otherVector; 
-    return copyObj; 
-}
-
-SparseVector SparseVector::operator+(const SparseVector& v1) const
-{
-    assert(GetSize() == v1.GetSize()); 
-    SparseVector v0(); // comment construire le vecteur ?? 
-    for (int i=0; i<GetSize(); i++)
-    {
-        v0[i] = nzVector[i] + v1.nzVector[i]; 
-    }
-    return v0; 
+    rowidx = otherVector.rowidx ; 
+    nzval = otherVector.nzval ;
+    return *this ; 
 }
 
 int main()
