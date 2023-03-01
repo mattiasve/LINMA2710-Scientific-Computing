@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+_Guide to Scientific Computing in Cpp.pdf
+_Morton_Numerical Solution of PDE.pdf
+.gitignore
+_Tveito2010_Book_ElementsOfScientificComputing.pdf
