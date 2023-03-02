@@ -3,9 +3,8 @@
 #include <cassert>
 #include <iostream>
 
-SparseVector::SparseVector() : AbstractVector(0) // empty default constructor
+SparseVector::SparseVector() : AbstractVector(1) // empty default constructor
 {
-    // à priori c'est OK
     nnz = 0; 
     rowidx = NULL; 
     nzval = NULL; 
@@ -13,6 +12,7 @@ SparseVector::SparseVector() : AbstractVector(0) // empty default constructor
 
 SparseVector::SparseVector(int nnzero, int const *rowindex, double const *nzvalues, int size) : AbstractVector(size)
 {
+    nnz = nnzero;
     rowidx = new int[nnzero];
     nzval = new double[nnzero]; 
     for(int i=0; i<nnzero; i++)
@@ -31,9 +31,9 @@ SparseVector::~SparseVector()
 double SparseVector::Read(int i) const
 {
     assert(i > -1);
-    assert(i < length(*this)); 
+    assert(i < length(*this));
 
-    for (int j = 0; j < length(*this); j++)
+    for (int j = 0; j < this->nnz; j++)
     {
     if (*(rowidx+j) == i)
         return *(nzval+j);
@@ -43,18 +43,23 @@ double SparseVector::Read(int i) const
 
 SparseVector& SparseVector::operator=(const SparseVector& otherVector)
 {   
-    for(int i=0; i<length(otherVector); i++) // iterate over the size of otherVector
-    {
-        nzval[i] = otherVector.Read(i) ; // acces value of private member with member function
-        // rowidx[i] = otherVector.Read(i) ; // fonctionne pas car Read lis return seulement nzval[i]
-    }
+    nnz = otherVector.nnz;
+    nzval = otherVector.nzval; 
+    rowidx = otherVector.rowidx;
+
+    // std::cout << "this->nnz = " << this->nnz << std::endl;
+    // for (int i=0; i<nnz; i++)
+    //     std::cout << nzval[i] << std::endl;
+    // for (int i=0; i<nnz; i++)
+    //     std::cout << rowidx[i] << std::endl;
+
     return *this ; 
 }
 
 SparseVector SparseVector::operator+(const SparseVector& v1) const
 {
-    SparseVector SumOfVector; 
-    SumOfVector = *this ; 
+    // SparseVector SumOfVector; 
+    // SumOfVector = *this ; 
 
     return v1; 
 }
