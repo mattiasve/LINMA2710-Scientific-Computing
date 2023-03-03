@@ -1,4 +1,3 @@
-#include "Vector.hpp"
 #include "SparseVector.hpp"
 #include <cassert>
 #include <iostream>
@@ -43,24 +42,25 @@ double SparseVector::Read(int i) const
 
 SparseVector& SparseVector::operator=(const SparseVector& otherVector)
 {   
-    nnz = otherVector.nnz;
-    nzval = otherVector.nzval; 
-    rowidx = otherVector.rowidx;
-
-    // std::cout << "this->nnz = " << this->nnz << std::endl;
-    // for (int i=0; i<nnz; i++)
-    //     std::cout << nzval[i] << std::endl;
-    // for (int i=0; i<nnz; i++)
-    //     std::cout << rowidx[i] << std::endl;
+    this->mSize = otherVector.GetSize(); 
+    this->nnz = otherVector.nnz;
+    this->nzval = otherVector.nzval; 
+    this->rowidx = otherVector.rowidx;
 
     return *this ; 
 }
 
 SparseVector SparseVector::operator+(const SparseVector& v1) const
 {
-    // SparseVector SumOfVector; 
-    // SumOfVector = *this ; 
+    for (int i=0; i< std::max(this->nnz, v1.nnz); i++) // iterate over maximum value between this.nnz and v1.nnz
+    {
+        *this->nzval = this->Read(i) + v1.Read(i); 
+    }
 
-    return v1; 
+    return *this; 
 }
 
+// int main()
+// {
+//     return 0; 
+// }
