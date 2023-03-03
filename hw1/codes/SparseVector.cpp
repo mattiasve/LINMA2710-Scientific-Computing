@@ -52,15 +52,89 @@ SparseVector& SparseVector::operator=(const SparseVector& otherVector)
 
 SparseVector SparseVector::operator+(const SparseVector& v1) const
 {
-    for (int i=0; i< std::max(this->nnz, v1.nnz); i++) // iterate over maximum value between this.nnz and v1.nnz
+    // create containers that will store values when iterating
+    // and will be copied into a correct-size array later
+    int *cntn_idx = new int[nnz+v1.nnz]; 
+    double *cntn_val = new double [nnz+v1.nnz]; 
+
+    // iterate over non-zero values of both sparse vector
+    // k keeps track of the optimal size
+    int i=0, j=0, k=0 ; 
+    double sum ; 
+
+    while (i < nnz && j<v1.nnz)
     {
-        *this->nzval = this->Read(i) + v1.Read(i); 
+        if (*(rowidx+i) == *(v1.rowidx+j))
+        // both values are non-zero values
+        // compute and store sum
+        {
+            sum = *(nzval+i) + *(v1.nzval+j);
+            cntn_val[k] = sum;
+            cntn_idx[k] = *(rowidx+i); 
+            k++ ;
+            i++ ;
+            j++ ; 
+        }
+        else if (*(rowidx+i) < *(v1.rowidx+j))
+        // only one value is a non-zero value
+        // only store the relevant value
+        {
+            cntn_val[k] = *(nzval+i);
+            cntn_idx[k] = *(rowidx+i);
+            k++ ; 
+            i++ ;
+        }
+        else 
+        // likewise, but for the other sparse vetor
+        {
+            cntn_val[k] = *(v1.nzval+j);
+            cntn_idx[k] = *(v1.rowidx+j);
+            k++;
+            j++;
+        }
     }
 
-    return *this; 
+    while(i < nnz)
+    // append the remaining values in the first sparse vector
+    {
+        cntn_val[k] = *(nzval+i);
+        cntn_idx[k] = *(rowidx+i);
+        k++ ; 
+        i++ ;
+    }
+
+    while(j < v1.nnz)
+    // append the remaining values in the second vector
+    {
+        cntn_val[k] = *(v1.nzval+j);
+        cntn_idx[k] = *(v1.rowidx+j);
+        k++;
+        j++;
+    }
+
+    // create optimal size arrays and copy data inside it
+    int *opti_index = new int[k] ; 
+    double *opti_values = new double[k] ;
+    std::copy(cntn_idx, cntn_idx+k, opti_index) ; 
+    std::copy(cntn_val, cntn_val+k, opti_values) ;
+
+    // create SparseVector containing the sum
+    SparseVector sum_sv(k, opti_index, opti_values, length(v1)); 
+    //return sum_sv; 
+    
+    // deallocate memory
+    delete [] cntn_idx; 
+    delete [] cntn_val; 
+
+    return sum_sv; 
+
+    delete [] opti_index; 
+    delete [] opti_values; 
 }
 
 // int main()
 // {
 //     return 0; 
 // }
+
+
