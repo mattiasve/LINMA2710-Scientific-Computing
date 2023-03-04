@@ -120,21 +120,5 @@ SparseVector SparseVector::operator+(const SparseVector& v1) const
 
     // create SparseVector containing the sum
     SparseVector sum_sv(k, opti_index, opti_values, length(v1)); 
-    //return sum_sv; 
-    
-    // deallocate memory
-    delete [] cntn_idx; 
-    delete [] cntn_val; 
-
     return sum_sv; 
-
-    delete [] opti_index; 
-    delete [] opti_values; 
 }
-
-// int main()
-// {
-//     return 0; 
-// }
-
-
