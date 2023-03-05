@@ -71,11 +71,16 @@ SparseMatrix::SparseMatrix(int nnz, int const *ridx, int const *cidx, double con
     // copy relative elements in the right position
     for (int i=0; i<nnz; i++)
     {
-        int index = this->colptr[cidx[i]]++; 
+        int index = this->colptr[cidx[i]]; 
         this->nzval[index] = nzval[i];
         this->rowidx[index] = ridx[i];
+        this->colptr[cidx[i]]++; // increment column pointer for the next non-zero value in the same column
     }
 
+    // reset column pointer to the start of each column
+    for (int i=size2; i>0; i--)
+        this->colptr[i] = this->colptr[i-1];
+    this->colptr[0] = 0;
 }
 
 // accessor 
@@ -166,16 +171,37 @@ Vector operator *(const SparseMatrix& m, const Vector& v)
     {
         // get limits of column j
         int start = m.colptr[j];
-        int end = m.colptr[j];
+        int end = m.colptr[j+1];
 
         // iterate over the non-zero values in column j
-        for (int k= start; k<end; k++)
+        for (int k=start; k<end; k++)
         {
+            //std::cout << " yooo " << std::endl;
             int i = m.rowidx[k];
             double value = m.nzval[k];
+
+            // std::cout << "nzval[j] = " <<  m.nzval[k] << std::endl;
+            // std::cout << "v.Read(j) = " << v.Read(j) << std::endl;
 
             sol_v[i] += value * v.Read(j);
         }
     }
+
+    // // check answer
+    // std::cout << "sol_v = ";
+    // for (int i=0; i<sol_v.GetSize(); i++)
+    //     std::cout << sol_v.Read(i);
+    // std::cout << '\n'; 
+    // // check sm
+    // std::cout << "sm = ";
+    // for (int i=0; i<m.GetSize(2)+1; i++)
+    //     std::cout << m.colptr[i] ;
+    // std::cout << '\n'; 
+    // // check sm.nzval
+    // std::cout << "sm.nzval = ";
+    // for (int i=0; i<m.nnz; i++)
+    //     std::cout << m.nzval[i] << " " ;
+    // std::cout << '\n'; 
+
     return sol_v;
 }
