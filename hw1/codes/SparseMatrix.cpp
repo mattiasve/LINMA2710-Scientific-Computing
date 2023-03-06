@@ -77,6 +77,7 @@ SparseMatrix::SparseMatrix(int nnz, int const *ridx, int const *cidx, double con
         this->colptr[cidx[i]]++; // increment column pointer for the next non-zero value in the same column
     }
 
+
     // reset column pointer to the start of each column
     for (int i=size2; i>0; i--)
         this->colptr[i] = this->colptr[i-1];
@@ -107,9 +108,17 @@ SparseMatrix& SparseMatrix::operator=(const SparseMatrix& otherSparseMatrix)
     this->m = otherSparseMatrix.m;
     this->n = otherSparseMatrix.n; 
     this->nnz = otherSparseMatrix.nnz; 
-    this->colptr = otherSparseMatrix.colptr;
-    this->rowidx = otherSparseMatrix.rowidx;
-    this->nzval = otherSparseMatrix.nzval;
+    this->colptr = new int[otherSparseMatrix.n+1];
+    this->rowidx = new int[otherSparseMatrix.n];
+    this->nzval = new double[otherSparseMatrix.n];
+
+    for (int i=0; i<otherSparseMatrix.n; i++)
+    {
+        *(rowidx+i) = otherSparseMatrix.rowidx[i];
+        *(nzval+i) = otherSparseMatrix.nzval[i];
+    }
+    for (int i=0; i<otherSparseMatrix.n+1; i++)
+        *(colptr+i) = otherSparseMatrix.colptr[i];
 
     return *this;
 }
