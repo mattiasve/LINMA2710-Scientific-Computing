@@ -44,9 +44,13 @@ SparseVector& SparseVector::operator=(const SparseVector& otherVector)
 {   
     this->mSize = otherVector.GetSize(); 
     this->nnz = otherVector.nnz;
-    this->nzval = otherVector.nzval; 
-    this->rowidx = otherVector.rowidx;
-
+    this->nzval = new double[otherVector.nnz]; 
+    this->rowidx = new int[otherVector.nnz];
+    for (int i=0; i<otherVector.nnz; i++)
+    {
+        *(nzval+i) = otherVector.nzval[i];
+        *(rowidx+i) = otherVector.rowidx[i];
+    }
     return *this ; 
 }
 
