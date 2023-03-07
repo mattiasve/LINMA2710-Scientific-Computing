@@ -50,13 +50,6 @@ SparseMatrix::SparseMatrix(int m, int n, int nnz, int* colptr, int* rowidx, doub
 // specialized contructor
 SparseMatrix::SparseMatrix(int nnz, int const *ridx, int const *cidx, double const *nzval, int size1, int size2)
 {
-    struct Triple 
-    {
-      int ri;
-      int ci;
-      double nzv;
-    };
-
     this->m = size1;
     this->n = size2;
     this->nnz = nnz;
@@ -64,36 +57,49 @@ SparseMatrix::SparseMatrix(int nnz, int const *ridx, int const *cidx, double con
     this->rowidx = new int[nnz];
     this->colptr = new int[size2+1];
 
-    // // sort
-    // // Create an array of struct that combines ri, ci, and nzv values
-    // Triple triples[nnz];
-    // for (int i = 0; i < nnz; i++) 
-    // {
-    //     triples[i].ri  = *(ridx+i);
-    //     triples[i].ci  = *(cidx+i);
-    //     triples[i].nzv = *(nzval+i);
-    // }
+    /*
+    In this following part I tried to implement a method to sort cidx in a way that 
+    still matches with ridx and nzval. The methods works but does not yield the right sparse matrix.
+    Values in the same column are switched 
+    // ===== SORTING =====
+    struct Triple 
+    {
+      int ri;
+      int ci;
+      double nzv;
+    };
 
-    // // Sort the array of struct based on the ci value
-    // std::sort(triples, triples + 7,
-    //             [](const Triple& lhs, const Triple& rhs) 
-    //             { return lhs.ci < rhs.ci; });
+    // Create an array of struct that combines ri, ci, and nzv values
+    Triple triples[nnz];
+    for (int i = 0; i < nnz; i++) 
+    {
+        triples[i].ri  = *(ridx+i);
+        triples[i].ci  = *(cidx+i);
+        triples[i].nzv = *(nzval+i);
+    }
 
-    // // Extract the sorted ri, ci, and nzv arrays from the sorted array of struct
-    // int sorted_ridx[nnz];
-    // int sorted_cidx[nnz];
-    // double sorted_nzval[nnz];
-    // for (int i = 0; i < nnz; i++) 
-    // {
-    //     sorted_ridx[i]  = triples[i].ri  ;
-    //     sorted_cidx[i]  = triples[i].ci  ;
-    //     sorted_nzval[i] = triples[i].nzv ;
-    // }
+    // Sort the array of struct based on the ci value
+    std::sort(triples, triples + 7,
+                [](const Triple& lhs, const Triple& rhs) 
+                { return lhs.ci < rhs.ci; });
 
-    // // Print the sorted arrays for verification
-    // for (int i = 0; i < 7; ++i) {
-    // std::cout << "ridx[" << i << "] = " << sorted_ridx[i] << ", cidx[" << i << "] = " << sorted_cidx[i] << ", nzval[" << i << "] = " << sorted_nzval[i] << std::endl;
-    // }
+    // Extract the sorted ri, ci, and nzv arrays from the sorted array of struct
+    int sorted_ridx[nnz];
+    int sorted_cidx[nnz];
+    double sorted_nzval[nnz];
+    for (int i = 0; i < nnz; i++) 
+    {
+        sorted_ridx[i]  = triples[i].ri  ;
+        sorted_cidx[i]  = triples[i].ci  ;
+        sorted_nzval[i] = triples[i].nzv ;
+    }
+
+    // Print the sorted arrays for verification
+    for (int i = 0; i < 7; ++i) {
+    std::cout << "ridx[" << i << "] = " << sorted_ridx[i] << ", cidx[" << i << "] = " << sorted_cidx[i] << ", nzval[" << i << "] = " << sorted_nzval[i] << std::endl;
+    }
+    // ===== END SORTING =====
+    */
 
     // fill colptr with zeros
     for (int i=0; i<size2+1; i++)
@@ -252,22 +258,5 @@ Vector operator *(const SparseMatrix& m, const Vector& v)
             sol_v[i] += value * v.Read(j);
         }
     }
-
-    // // check answer
-    // std::cout << "sol_v = ";
-    // for (int i=0; i<sol_v.GetSize(); i++)
-    //     std::cout << sol_v.Read(i) << " ";
-    // std::cout << '\n'; 
-    // // check sm
-    // std::cout << "sm = ";
-    // for (int i=0; i<m.GetSize(2)+1; i++)
-    //     std::cout << m.colptr[i] ;
-    // std::cout << '\n'; 
-    // // check sm.nzval
-    // std::cout << "sm.nzval = ";
-    // for (int i=0; i<m.nnz; i++)
-    //     std::cout << m.nzval[i] << " " ;
-    // std::cout << '\n'; 
-
     return sol_v;
 }
