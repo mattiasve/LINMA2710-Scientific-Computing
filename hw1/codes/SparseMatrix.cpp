@@ -1,6 +1,8 @@
 #include "SparseMatrix.hpp"
 #include <cassert>
 #include <iostream>
+#include <algorithm>
+#include <vector>
 
 // zero sparse matrix contructor
 SparseMatrix::SparseMatrix(int numRows, int numCols)
@@ -46,14 +48,52 @@ SparseMatrix::SparseMatrix(int m, int n, int nnz, int* colptr, int* rowidx, doub
 }
 
 // specialized contructor
-SparseMatrix::SparseMatrix(int nnz, int const *ridx, int const *cidx, double const *nzval, int size1, int size2) 
+SparseMatrix::SparseMatrix(int nnz, int const *ridx, int const *cidx, double const *nzval, int size1, int size2)
 {
+    struct Triple 
+    {
+      int ri;
+      int ci;
+      double nzv;
+    };
+
     this->m = size1;
     this->n = size2;
     this->nnz = nnz;
     this->nzval = new double[nnz];
     this->rowidx = new int[nnz];
     this->colptr = new int[size2+1];
+
+    // // sort
+    // // Create an array of struct that combines ri, ci, and nzv values
+    // Triple triples[nnz];
+    // for (int i = 0; i < nnz; i++) 
+    // {
+    //     triples[i].ri  = *(ridx+i);
+    //     triples[i].ci  = *(cidx+i);
+    //     triples[i].nzv = *(nzval+i);
+    // }
+
+    // // Sort the array of struct based on the ci value
+    // std::sort(triples, triples + 7,
+    //             [](const Triple& lhs, const Triple& rhs) 
+    //             { return lhs.ci < rhs.ci; });
+
+    // // Extract the sorted ri, ci, and nzv arrays from the sorted array of struct
+    // int sorted_ridx[nnz];
+    // int sorted_cidx[nnz];
+    // double sorted_nzval[nnz];
+    // for (int i = 0; i < nnz; i++) 
+    // {
+    //     sorted_ridx[i]  = triples[i].ri  ;
+    //     sorted_cidx[i]  = triples[i].ci  ;
+    //     sorted_nzval[i] = triples[i].nzv ;
+    // }
+
+    // // Print the sorted arrays for verification
+    // for (int i = 0; i < 7; ++i) {
+    // std::cout << "ridx[" << i << "] = " << sorted_ridx[i] << ", cidx[" << i << "] = " << sorted_cidx[i] << ", nzval[" << i << "] = " << sorted_nzval[i] << std::endl;
+    // }
 
     // fill colptr with zeros
     for (int i=0; i<size2+1; i++)
@@ -72,11 +112,10 @@ SparseMatrix::SparseMatrix(int nnz, int const *ridx, int const *cidx, double con
     for (int i=0; i<nnz; i++)
     {
         int index = this->colptr[cidx[i]]; 
-        this->nzval[index] = nzval[i];
+        this->nzval[index]  = nzval[i];
         this->rowidx[index] = ridx[i];
         this->colptr[cidx[i]]++; // increment column pointer for the next non-zero value in the same column
     }
-
 
     // reset column pointer to the start of each column
     for (int i=size2; i>0; i--)
@@ -130,11 +169,17 @@ SparseMatrix SparseMatrix::operator+() const
     new_nzvalues = new double[this->nnz];
 
     for (int i=0; i<this->nnz; i++)
-    {
         new_nzvalues[i] = + this->nzval[i]; 
+
+    // build back cidx
+    int* cidx_bis = new int[nnz];
+    for (int j = 0; j < this->n; j++) 
+    {
+        for (int k = colptr[j]; k < colptr[j+1]; k++)
+            cidx_bis[k] = j;
     }
 
-    SparseMatrix new_plus_sm(this->nnz, this->rowidx, this->colptr, new_nzvalues, this->GetSize(1), this->GetSize(2));
+    SparseMatrix new_plus_sm(this->nnz, this->rowidx, cidx_bis, new_nzvalues, this->GetSize(1), this->GetSize(2));
     return new_plus_sm;
 }
 
@@ -145,11 +190,17 @@ SparseMatrix SparseMatrix::operator-() const
     new_nzvalues = new double[this->nnz];
 
     for (int i=0; i<this->nnz; i++)
+        new_nzvalues[i] = - this->nzval[i];
+    
+    // build back cidx
+    int* cidx_bis = new int[nnz];
+    for (int j = 0; j < this->n; j++) 
     {
-        new_nzvalues[i] = - this->nzval[i]; 
+        for (int k = colptr[j]; k < colptr[j+1]; k++)
+            cidx_bis[k] = j;
     }
 
-    SparseMatrix new_minus_sm(this->nnz, this->rowidx, this->colptr, new_nzvalues, this->GetSize(1), this->GetSize(2));
+    SparseMatrix new_minus_sm(this->nnz, this->rowidx, cidx_bis, new_nzvalues, this->GetSize(1), this->GetSize(2));
     return new_minus_sm;
 }
 
@@ -160,11 +211,17 @@ SparseMatrix SparseMatrix::operator *(double a) const
     new_nzvalues = new double[this->nnz];
 
     for (int i=0; i<this->nnz; i++)
+        new_nzvalues[i] = a * this->nzval[i];
+    
+    // build back cidx
+    int* cidx_bis = new int[nnz];
+    for (int j = 0; j < this->n; j++) 
     {
-        new_nzvalues[i] = a * this->nzval[i]; 
+        for (int k = colptr[j]; k < colptr[j+1]; k++)
+            cidx_bis[k] = j;
     }
 
-    SparseMatrix new_multiply_sm(this->nnz, this->rowidx, this->colptr, new_nzvalues, this->GetSize(1), this->GetSize(2));
+    SparseMatrix new_multiply_sm(this->nnz, this->rowidx, cidx_bis, new_nzvalues, this->GetSize(1), this->GetSize(2));
     return new_multiply_sm;
 }
 
@@ -199,7 +256,7 @@ Vector operator *(const SparseMatrix& m, const Vector& v)
     // // check answer
     // std::cout << "sol_v = ";
     // for (int i=0; i<sol_v.GetSize(); i++)
-    //     std::cout << sol_v.Read(i);
+    //     std::cout << sol_v.Read(i) << " ";
     // std::cout << '\n'; 
     // // check sm
     // std::cout << "sm = ";
