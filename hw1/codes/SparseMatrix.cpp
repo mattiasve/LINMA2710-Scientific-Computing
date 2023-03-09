@@ -248,7 +248,6 @@ Vector operator *(const SparseMatrix& m, const Vector& v)
         // iterate over the non-zero values in column j
         for (int k=start; k<end; k++)
         {
-            //std::cout << " yooo " << std::endl;
             int i = m.rowidx[k];
             double value = m.nzval[k];
 
