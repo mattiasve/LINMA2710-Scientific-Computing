@@ -105,7 +105,7 @@ int main()
     testisapprox(ans, sv, "Instantiate partial sparse vector ");
     }
 
-    // checks data is well copied and delete operation (with valgrind)
+    //checks data is well copied and delete operation (with valgrind)
     {
     double* data = new double[3];
     data[0] = 1.; data[1] = 2.; data[2] = 3.;
@@ -128,7 +128,7 @@ int main()
     SparseVector sv(3,ridx,data,5);
     Vector ans(5);
     ans(1) = 1.; ans(2) = 2.; ans(4) = 3.;
-
+    
     SparseVector sv_;
     sv_ = sv;
     testisapprox(ans, sv_, "assignement for sparse vectors ");
@@ -159,8 +159,6 @@ int main()
         SparseMatrix tests note that they rely on a correct matrix,vector product
     */
 
-    /* //COMMENT SPARSEMATRIX PART
-
     Vector e0(4); e0(0) = 1.;
     Vector e1(4); e1(1) = 1.;
     Vector e2(4); e2(2) = 1.;
@@ -172,9 +170,9 @@ int main()
     testisapprox(null,sm0*e0, "instanciation null sparse matrix 0");
     testisapprox(null,sm0*e3, "instanciation null sparse matrix 4");
     int nnz = 7;
-    int ridx[nnz] = {0,2,0,1,3,2,0};
-    int cidx[nnz] = {0,0,1,1,1,2,3};
-    double nzval[nnz] = {2.1,1.,3.5,2.2,2.0,2.3,1.9};
+    int ridx[7] = {0,2,0,1,3,2,0};
+    int cidx[7] = {0,0,1,1,1,2,3};
+    double nzval[7] = {2.1,1.,3.5,2.2,2.0,2.3,1.9};
     SparseMatrix sm(nnz, ridx, cidx, nzval, 4, 4);
     Vector ans0(4); ans0(0) = 2.1; ans0(2) = 1.;
     Vector ans1(4); ans1(0) = 3.5; ans1(1) = 2.2; ans1(3) = 2.;
@@ -214,11 +212,12 @@ int main()
     }
 
     // unary +,- and scalar multilication
+    
     {
     int nnz = 7;
-    int ridx[nnz] = {0,2,0,1,3,2,0};
-    int cidx[nnz] = {0,0,1,1,1,2,3};
-    double nzval[nnz] = {2.1,1.,3.5,2.2,2.0,2.3,1.9};
+    int ridx[7] = {0,2,0,1,3,2,0};
+    int cidx[7] = {0,0,1,1,1,2,3};
+    double nzval[7] = {2.1,1.,3.5,2.2,2.0,2.3,1.9};
     SparseMatrix sm(nnz, ridx, cidx, nzval, 4, 4);
     
     Vector ans0(4); ans0(0) = 2.1; ans0(2) = 1.;
@@ -244,9 +243,9 @@ int main()
     // matrix vector product
     {
     int nnz = 7;
-    int ridx[nnz] = {0,2,0,1,3,2,0};
-    int cidx[nnz] = {0,0,1,1,1,2,3};
-    double nzval[nnz] = {2.1,1.,3.5,2.2,2.0,2.3,1.9};
+    int ridx[7] = {0,2,0,1,3,2,0};
+    int cidx[7] = {0,0,1,1,1,2,3};
+    double nzval[7] = {2.1,1.,3.5,2.2,2.0,2.3,1.9};
     SparseMatrix sm(nnz, ridx, cidx, nzval, 4, 4);
 
     Vector v(4); v(0)=0.7; v(1)=-3.4; v(2)=-1.; v(3)=1.;
@@ -257,17 +256,16 @@ int main()
     // rectangular matrix - vector product
     {
     int nnz = 6;
-    int ridx[nnz] = {0,2,0,1,2,0};
-    int cidx[nnz] = {0,0,1,1,2,3};
-    double nzval[nnz] = {2.1,1.,3.5,2.2,2.3,1.9};
+    int ridx[6] = {0,2,0,1,2,0};
+    int cidx[6] = {0,0,1,1,2,3};
+    double nzval[6] = {2.1,1.,3.5,2.2,2.3,1.9};
     SparseMatrix sm(nnz, ridx, cidx, nzval, 3, 4);
     
     Vector v(4); v(0)=0.7; v(1)=-3.4; v(2)=-1.; v(3)=1.;
     Vector ans(3); ans(0)=-8.53;ans(1)=-7.48;ans(2)=-1.6;
     testisapprox(ans,sm*v, "rectangular sparse matrix * vector");
-    
     }
-*/
+    
 
     return 0;
 }
