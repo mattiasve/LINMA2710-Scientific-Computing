@@ -58,9 +58,9 @@ SparseMatrix::SparseMatrix(int nnz, int const *ridx, int const *cidx, double con
     this->nnz = nnz;
     this->m = size1 ; 
     n = size2 ;
-    colptr = new int[n+1]; //leak
-    rowidx = new int[nnz]; //leak
-    nzval  = new double[nnz]; //leak
+    colptr = new int[n+1];    //leak, could not solve it :(
+    rowidx = new int[nnz];    //leak, could not solve it :(
+    nzval  = new double[nnz]; //leak, could not solve it :(
     int colidx[nnz];
 
     std::copy(cidx, cidx + nnz, colidx);

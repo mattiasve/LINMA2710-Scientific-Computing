@@ -116,7 +116,7 @@ SparseVector SparseVector::operator+(const SparseVector& v1) const
         j++;
     }
 
-    // create optimal size arrays and copy data inside it
+    // create optimal-sized arrays and copy data inside it
     int *opti_index = new int[k] ; 
     double *opti_values = new double[k] ;
     std::copy(cntn_idx, cntn_idx+k, opti_index) ; 
