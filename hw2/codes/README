@@ -1,0 +1,3 @@
+The furnished Makefile suppose that "armadillo" is installed and that the file "libfade2D.so" (linux) and the directory "include_fade2d" are in the directory.
+
+Don't hesite to change the Makefile to suits your needs.
