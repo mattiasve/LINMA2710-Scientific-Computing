@@ -148,7 +148,34 @@ void treat_volumes(Voronoi2 *p_voro, std::vector<VoroCell2*> &v_voronoi_cells, s
 */
 void setup_equations(const std::function<double(double,double)>& a, const std::function<double(double,double)>& f, const std::function<double(double,double)>& g, int n_points, std::vector<VoroCell2*> &v_voronoi_cells, std::vector<std::vector<Neighbour_Volume*>*> &adjacent_volumes, arma::SpMat<double> &A, arma::Col<double> &b)
 {
-	// TODO
+    A = arma::sp_mat(n_points, n_points);
+    b = arma::vec(n_points);
+   // A.print();
+
+    for (int i=0; i<n_points; i++)
+    {
+        int nb_neigbour = (*adjacent_volumes[i]).size();
+        
+        if (v_voronoi_cells[i]->getArea() == -1) // cell is on the boundary, apply boundary condition
+        {
+            A(i, v_voronoi_cells[i]->getCustomCellIndex()) = 1; 
+            b[i] = g(v_voronoi_cells[i]->getSite()->x(), v_voronoi_cells[i]->getSite()->y());
+        }
+        else {
+            for (int j=0; j<nb_neigbour; j++) // cell is the inside domain
+            {
+                double Aij;
+                double xij = (*adjacent_volumes[i])[j]->x;
+                double yij = (*adjacent_volumes[i])[j]->y;
+
+                Aij = a(xij, yij) * ((*adjacent_volumes[i])[j]->l)/(*adjacent_volumes[i])[j]->h ; // compute matrix coefficient
+                A(i, (*adjacent_volumes[i])[j]->idx) += Aij;
+                A(i, v_voronoi_cells[i]->getCustomCellIndex()) -= Aij;
+
+                b[i] = f(xij, yij) * v_voronoi_cells[i]->getArea();
+            }
+        }
+    }
 }
 
 /*
