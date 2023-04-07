@@ -33,7 +33,7 @@ void solve(const std::function<double(double,double)>& a, const std::function<do
     /*
 		Solve it
 	*/
-	arma::Col<double> u = arma::spsolve(A, b);
+	arma::Col<double> u = arma::spsolve(A, b, "lapack");
 
 
     for (int i=0; i<n_points; i++)
@@ -79,7 +79,7 @@ void compute_volumes(std::vector<Point2> v_points, Voronoi2* &p_voro, std::vecto
 
 /*
     Get the neighbours of each volume and compute relevant quantities
-        p_voro and v_voronoi_cells are the output of the compute columes function
+        p_voro and v_voronoi_cells are the output of the compute volumes function
         return adjacent volumes an adjacency list of voronoi cell -> (cell index, x, y, distance, common edge length)
 */
 void treat_volumes(Voronoi2 *p_voro, std::vector<VoroCell2*> &v_voronoi_cells, std::vector<std::vector<Neighbour_Volume*>*> &adjacent_volumes)
@@ -90,7 +90,7 @@ void treat_volumes(Voronoi2 *p_voro, std::vector<VoroCell2*> &v_voronoi_cells, s
         // std::cout<<v_cell->getCustomCellIndex()<<std::endl;
         // Point2 *site = v_cell->getSite();
         // std::cout<<*site<<std::endl;
-        // int area = v_cell->getArea();
+        // int area = v_cell->getArea(); -----> AREA 
         // std::cout<<"\tcell area = ";
         // if (area>0.)
         //     std::cout<<area<<std::endl;
@@ -148,9 +148,11 @@ void treat_volumes(Voronoi2 *p_voro, std::vector<VoroCell2*> &v_voronoi_cells, s
 */
 void setup_equations(const std::function<double(double,double)>& a, const std::function<double(double,double)>& f, const std::function<double(double,double)>& g, int n_points, std::vector<VoroCell2*> &v_voronoi_cells, std::vector<std::vector<Neighbour_Volume*>*> &adjacent_volumes, arma::SpMat<double> &A, arma::Col<double> &b)
 {
+	// TODO
     A = arma::sp_mat(n_points, n_points);
     b = arma::vec(n_points);
-   // A.print();
+    // A.print();
+    std::cout << "length of voronoi cell list = " << v_voronoi_cells.size() << std::endl;
 
     for (int i=0; i<n_points; i++)
     {
@@ -162,20 +164,22 @@ void setup_equations(const std::function<double(double,double)>& a, const std::f
             b[i] = g(v_voronoi_cells[i]->getSite()->x(), v_voronoi_cells[i]->getSite()->y());
         }
         else {
-            for (int j=0; j<nb_neigbour; j++) // cell is the inside domain
+            for (int j=0; j<nb_neigbour; j++) // cell is inside the domain
             {
                 double Aij;
                 double xij = (*adjacent_volumes[i])[j]->x;
                 double yij = (*adjacent_volumes[i])[j]->y;
-
-                Aij = a(xij, yij) * ((*adjacent_volumes[i])[j]->l)/(*adjacent_volumes[i])[j]->h ; // compute matrix coefficient
+                // compute coefficients and fill matrix
+                Aij = a(xij, yij) * ((*adjacent_volumes[i])[j]->l)/(*adjacent_volumes[i])[j]->h ;
                 A(i, (*adjacent_volumes[i])[j]->idx) += Aij;
                 A(i, v_voronoi_cells[i]->getCustomCellIndex()) -= Aij;
-
+                // compute right-hand side and fill dense vector
                 b[i] = f(xij, yij) * v_voronoi_cells[i]->getArea();
             }
         }
     }
+    //std::cout << "IM HERE" << std::endl;
+    //A.print();
 }
 
 /*

@@ -30,6 +30,11 @@ int main()
 {
 
 	/*
+		Set flag for convergence analysis
+	*/
+	bool convergence_flag = true;
+
+	/*
 		Define problem functions
 	*/
 	// diffusivity coefficient
@@ -58,32 +63,106 @@ int main()
 	};
 	// grid of points inside the domain
 	std::vector<Point2> v_points;
-	double delta = 1.;
 	double length = 20.;
-	for(double x=-length; x<=length+1e-6; x+=delta)
+	double delta;
+
+	/*
+		if loop for convergence analysis
+	*/
+	if (convergence_flag)
 	{
-		for(double y=-length; y<=length+1e-6; y+=delta)
+		// do convergence analysis
+		double grid_sizes[10] = {9., 8., 6., 4., 2., 1., 0.75, 0.5, 0.25, 0.125};
+		for (int i=0; i<10; i++)
 		{
-			if (problem_region(x,y))
-				v_points.push_back(Point2(x,y));
+			delta = grid_sizes[i];
+			for(double x=-length; x<=length+1e-6; x+=delta)
+			{
+				for(double y=-length; y<=length+1e-6; y+=delta)
+					{
+					if (problem_region(x,y))
+						v_points.push_back(Point2(x,y));
+					}
+			}
+			// points on the border
+			for (double alpha=0.; alpha<2*M_PI; alpha+=2*M_PI/1000)
+				v_points.push_back(Point2(10.*cos(alpha), 10*sin(alpha)));
+
+			/*
+				solve the problem	
+			*/
+			vector<double> x;
+			vector<double> y;
+			vector<double> sol;
+			solve(a, f, g, v_points, x, y, sol);
+
+			/*
+				write it
+			*/
+			std::string filename = "sol_conan" + std::to_string(i) + ".txt";
+			write_solution(filename.c_str(), x, y ,sol);
+			v_points.clear();
+			std::cout << "convergence analysis output " + std::to_string(i) + " OK" << std::endl;
 		}
 	}
-	// points on the border
-	for (double alpha=0.; alpha<2*M_PI; alpha+=2*M_PI/1000)
-		v_points.push_back(Point2(10.*cos(alpha), 10*sin(alpha)));
+	else
+	{
+		// compute basic solution with a grid size of 1
+		delta = 1.;
+		for(double x=-length; x<=length+1e-6; x+=delta)
+		{
+			for(double y=-length; y<=length+1e-6; y+=delta)
+			{
+				if (problem_region(x,y))
+					v_points.push_back(Point2(x,y));
+			}
+		}
+		// points on the border
+		for (double alpha=0.; alpha<2*M_PI; alpha+=2*M_PI/1000)
+			v_points.push_back(Point2(10.*cos(alpha), 10*sin(alpha)));
 
 
-	/*
-		solve the problem	
-	*/
-	vector<double> x;
-	vector<double> y;
-	vector<double> sol;
-	solve(a, f, g, v_points, x, y, sol);
+		/*
+			solve the problem	
+		*/
+		vector<double> x;
+		vector<double> y;
+		vector<double> sol;
+		solve(a, f, g, v_points, x, y, sol);
 
-	/*
-		write it
-	*/
-	write_solution("sol.txt", x, y ,sol);
+		/*
+			write it
+		*/
+		write_solution("sol.txt", x, y ,sol);
+
+	}
+
+
+	// --------------------------
+	// for(double x=-length; x<=length+1e-6; x+=delta)
+	// {
+	// 	for(double y=-length; y<=length+1e-6; y+=delta)
+	// 	{
+	// 		if (problem_region(x,y))
+	// 			v_points.push_back(Point2(x,y));
+	// 	}
+	// }
+	// // points on the border
+	// for (double alpha=0.; alpha<2*M_PI; alpha+=2*M_PI/1000)
+	// 	v_points.push_back(Point2(10.*cos(alpha), 10*sin(alpha)));
+
+
+	// /*
+	// 	solve the problem	
+	// */
+	// vector<double> x;
+	// vector<double> y;
+	// vector<double> sol;
+	// solve(a, f, g, v_points, x, y, sol);
+
+	// /*
+	// 	write it
+	// */
+	// write_solution("sol.txt", x, y ,sol);
 }
 
