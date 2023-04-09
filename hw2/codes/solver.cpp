@@ -178,8 +178,6 @@ void setup_equations(const std::function<double(double,double)>& a, const std::f
             }
         }
     }
-    //std::cout << "IM HERE" << std::endl;
-    //A.print();
 }
 
 /*

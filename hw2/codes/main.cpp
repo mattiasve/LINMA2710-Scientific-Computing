@@ -72,8 +72,8 @@ int main()
 	if (convergence_flag)
 	{
 		// do convergence analysis
-		double grid_sizes[10] = {9., 8., 6., 4., 2., 1., 0.75, 0.5, 0.25, 0.125};
-		for (int i=0; i<10; i++)
+		double grid_sizes[5] = {4., 2., 1., 0.5, 0.25};
+		for (int i=0; i<5; i++)
 		{
 			delta = grid_sizes[i];
 			for(double x=-length; x<=length+1e-6; x+=delta)
