@@ -32,7 +32,7 @@ int main()
 	/*
 		Set flag for convergence analysis
 	*/
-	bool convergence_flag = true;
+	bool convergence_flag = false;
 
 	/*
 		Define problem functions
@@ -136,33 +136,5 @@ int main()
 		write_solution("sol.txt", x, y ,sol);
 
 	}
-
-
-	// --------------------------
-	// for(double x=-length; x<=length+1e-6; x+=delta)
-	// {
-	// 	for(double y=-length; y<=length+1e-6; y+=delta)
-	// 	{
-	// 		if (problem_region(x,y))
-	// 			v_points.push_back(Point2(x,y));
-	// 	}
-	// }
-	// // points on the border
-	// for (double alpha=0.; alpha<2*M_PI; alpha+=2*M_PI/1000)
-	// 	v_points.push_back(Point2(10.*cos(alpha), 10*sin(alpha)));
-
-
-	// /*
-	// 	solve the problem	
-	// */
-	// vector<double> x;
-	// vector<double> y;
-	// vector<double> sol;
-	// solve(a, f, g, v_points, x, y, sol);
-
-	// /*
-	// 	write it
-	// */
-	// write_solution("sol.txt", x, y ,sol);
 }
 
