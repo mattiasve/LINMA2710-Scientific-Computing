@@ -5,7 +5,7 @@ X = []
 Y = []
 U = []
 #with open("sol.txt", "r") as file:
-for i in range(10):
+for i in range(5):
     with open("./convergence_analysis_sol/sol_conan"+str(i)+".txt", "r") as file:
         for line in file:
             floats = [float(i) for i in line.split(' ')]

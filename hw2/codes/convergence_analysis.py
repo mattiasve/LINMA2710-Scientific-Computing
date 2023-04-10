@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt 
 import os 
-
 wd = os.getcwd()
 
 df0 = pd.read_csv(wd+'/convergence_analysis_sol/sol_conan0.txt', sep=" ", header=None)
@@ -29,15 +28,13 @@ plt.savefig('./plots/mesh_resolution.svg', bbox_inches='tight')
 plt.savefig('./plots/mesh_resolution.pdf', bbox_inches='tight', dpi=300)
 plt.show()
 #%%
-# Select the x and y columns from df0
+# error plot
 ref_pts = df0.iloc[:, :2]
-
 ref_df1 = pd.merge(ref_pts, df1, on=[0, 1])
 ref_df2 = pd.merge(ref_pts, df2, on=[0, 1])
 ref_df3 = pd.merge(ref_pts, df3, on=[0, 1])
 ref_df4 = pd.merge(ref_pts, df4, on=[0, 1])
 
-#%%
 errors = []
 lst_ref = [df0, ref_df1, ref_df2, ref_df3, ref_df4]
 
@@ -46,7 +43,7 @@ for i in range(len(lst_ref)-1):
     dfiplus1 = lst_ref[i+1]
     sum_error = 0
     for j in range(len(ref_pts)):
-        sum_error += dfiplus1.iloc[j][2] - dfi.iloc[j][2]
+        sum_error += (dfiplus1.iloc[j][2] - dfi.iloc[j][2])**2
     rmse = np.sqrt(sum_error/len(ref_pts))
     errors.append(rmse)
 
@@ -59,6 +56,6 @@ plt.xlabel('Comparison of mesh resolution $\Delta i$ and $ \Delta j$ [-]')
 plt.ylabel('RMSE [-]')
 plt.grid(linestyle=':')
 plt.savefig('./plots/convergence_analysis.svg', bbox_inches='tight')
-#plt.savefig('./plots/convergence_analysis.pdf', bbox_inches='tight', dpi=300)
+plt.savefig('./plots/convergence_analysis.pdf', bbox_inches='tight', dpi=300)
 
 plt.show()
