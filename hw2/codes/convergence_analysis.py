@@ -28,7 +28,7 @@ plt.savefig('./plots/mesh_resolution.svg', bbox_inches='tight')
 plt.savefig('./plots/mesh_resolution.pdf', bbox_inches='tight', dpi=300)
 plt.show()
 #%%
-# error plots
+# metrics computation
 ref_pts = df0.iloc[:, :2]
 ref_df1 = pd.merge(ref_pts, df1, on=[0, 1])
 ref_df2 = pd.merge(ref_pts, df2, on=[0, 1])
@@ -55,7 +55,7 @@ for i in range(len(nb_points)-1):
 print(diff_nb_pts)
 dummy_pts = np.reciprocal(diff_nb_pts)
 
-
+# plots
 plt.figure(dpi=300)
 plt.plot(diff_nb_pts, errors, '-o', label='data')
 #plt.plot(diff_nb_pts, dummy_pts, '-o', label=r'$y=1/x$')
@@ -76,3 +76,5 @@ plt.legend(loc='best')
 plt.savefig('./plots/convergence_analysis_log.svg', bbox_inches='tight')
 plt.savefig('./plots/convergence_analysis_log.pdf', bbox_inches='tight', dpi=300)
 plt.show()
+
+# %%
