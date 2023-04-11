@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt 
@@ -15,7 +16,6 @@ df4 = pd.read_csv(wd+'/convergence_analysis_sol/sol_conan4.txt', sep=" ", header
 # df8 = pd.read_csv(wd+'/convergence_analysis_sol/sol_conan8.txt', sep=" ", header=None) 
 # df9 = pd.read_csv(wd+'/convergence_analysis_sol/sol_conan9.txt', sep=" ", header=None) 
 
-
 fig = plt.figure(figsize=(8,8))
 plt.scatter(df4[0], df4[1], s=10, label='res = 0.25')
 plt.scatter(df3[0], df3[1], s=10, label='res = 0.5')
@@ -28,7 +28,7 @@ plt.savefig('./plots/mesh_resolution.svg', bbox_inches='tight')
 plt.savefig('./plots/mesh_resolution.pdf', bbox_inches='tight', dpi=300)
 plt.show()
 #%%
-# error plot
+# error plots
 ref_pts = df0.iloc[:, :2]
 ref_df1 = pd.merge(ref_pts, df1, on=[0, 1])
 ref_df2 = pd.merge(ref_pts, df2, on=[0, 1])
@@ -36,7 +36,9 @@ ref_df3 = pd.merge(ref_pts, df3, on=[0, 1])
 ref_df4 = pd.merge(ref_pts, df4, on=[0, 1])
 
 errors = []
+diff_nb_pts = []
 lst_ref = [df0, ref_df1, ref_df2, ref_df3, ref_df4]
+nb_points = [1022, 1070, 1306, 2246, 6006]
 
 for i in range(len(lst_ref)-1):
     dfi = lst_ref[i]
@@ -47,15 +49,30 @@ for i in range(len(lst_ref)-1):
     rmse = np.sqrt(sum_error/len(ref_pts))
     errors.append(rmse)
 
+for i in range(len(nb_points)-1):
+    diff_nb_pts.append(float(nb_points[i+1]-nb_points[i]))
 
-meshes = [r'$mesh_{4,2}$', r'$mesh_{2,1}$', r'$mesh_{1,0.5}$', r'$mesh_{0.5, 0.25}$']
+print(diff_nb_pts)
+dummy_pts = np.reciprocal(diff_nb_pts)
+
 
 plt.figure(dpi=300)
-plt.plot(meshes, errors, '-o')
-plt.xlabel('Comparison of mesh resolution $\Delta i$ and $ \Delta j$ [-]')
+plt.plot(diff_nb_pts, errors, '-o', label='data')
+#plt.plot(diff_nb_pts, dummy_pts, '-o', label=r'$y=1/x$')
+plt.xlabel('Additional number of points for two successive mesh resolution')
 plt.ylabel('RMSE [-]')
 plt.grid(linestyle=':')
 plt.savefig('./plots/convergence_analysis.svg', bbox_inches='tight')
 plt.savefig('./plots/convergence_analysis.pdf', bbox_inches='tight', dpi=300)
+plt.show()
 
+plt.figure(dpi=300)
+plt.loglog(diff_nb_pts, errors, '-o', label='data')
+plt.loglog(diff_nb_pts, dummy_pts, '-o', label=r'$y=1/x$')
+plt.xlabel('Log additional number of points for two successive mesh resolution')
+plt.ylabel('Log RMSE [-]')
+plt.grid(linestyle=':')
+plt.legend(loc='best')
+plt.savefig('./plots/convergence_analysis_log.svg', bbox_inches='tight')
+plt.savefig('./plots/convergence_analysis_log.pdf', bbox_inches='tight', dpi=300)
 plt.show()

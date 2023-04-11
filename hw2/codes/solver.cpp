@@ -151,28 +151,28 @@ void setup_equations(const std::function<double(double,double)>& a, const std::f
 	// TODO
     A = arma::sp_mat(n_points, n_points);
     b = arma::vec(n_points);
-    // A.print();
     std::cout << "length of voronoi cell list = " << v_voronoi_cells.size() << std::endl;
 
     for (int i=0; i<n_points; i++)
     {
-        int nb_neigbour = (*adjacent_volumes[i]).size();
+        int nb_neighbour = (*adjacent_volumes[i]).size();
         
-        if (v_voronoi_cells[i]->getArea() == -1) // cell is on the boundary, apply boundary condition
+        if (v_voronoi_cells[i]->getArea() == -1) // cell is on the boundary (cfr. doc getArea()), apply boundary condition
         {
             A(i, v_voronoi_cells[i]->getCustomCellIndex()) = 1; 
             b[i] = g(v_voronoi_cells[i]->getSite()->x(), v_voronoi_cells[i]->getSite()->y());
         }
-        else {
-            for (int j=0; j<nb_neigbour; j++) // cell is inside the domain
+        else 
+        {
+            for (int j=0; j<nb_neighbour; j++) // cell is inside the domain
             {
                 double Aij;
                 double xij = (*adjacent_volumes[i])[j]->x;
                 double yij = (*adjacent_volumes[i])[j]->y;
                 // compute coefficients and fill matrix
                 Aij = a(xij, yij) * ((*adjacent_volumes[i])[j]->l)/(*adjacent_volumes[i])[j]->h ;
-                A(i, (*adjacent_volumes[i])[j]->idx) += Aij;
-                A(i, v_voronoi_cells[i]->getCustomCellIndex()) -= Aij;
+                A(i, (*adjacent_volumes[i])[j]->idx) += Aij;               // neighbouring cell
+                A(i, v_voronoi_cells[i]->getCustomCellIndex()) -= Aij;     // current cell
                 // compute right-hand side and fill dense vector
                 b[i] = f(xij, yij) * v_voronoi_cells[i]->getArea();
             }
