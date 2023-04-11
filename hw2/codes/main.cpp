@@ -87,6 +87,10 @@ int main()
 			// points on the border
 			for (double alpha=0.; alpha<2*M_PI; alpha+=2*M_PI/1000)
 				v_points.push_back(Point2(10.*cos(alpha), 10*sin(alpha)));
+			
+			// compute max distance
+			double max_distance = distance(&v_points[0], &v_points[1]);
+			std::cout << "Max distance for grid size " << delta << " is " << max_distance << std::endl;
 
 			/*
 				solve the problem	
