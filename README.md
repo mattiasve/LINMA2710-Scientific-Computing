@@ -3,7 +3,5 @@
 
 ### Homework topics :
 1. Implementation for sparse vectors and sparse matrices in a Compressed Sparse Column format (CSC)
-2. Finite volume solver for the diffusion proble
-3. tdb
-
--
+2. Finite volume solver for the diffusion problem
+3. Parallelization with OpenMPI
